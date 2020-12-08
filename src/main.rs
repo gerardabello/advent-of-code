@@ -3,6 +3,7 @@ use std::env;
 #[macro_use]
 extern crate lazy_static;
 
+extern crate nom;
 extern crate regex;
 
 mod utils;
