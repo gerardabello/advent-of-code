@@ -1,4 +1,5 @@
 use std::env;
+use std::time::Instant;
 
 #[macro_use]
 extern crate lazy_static;
@@ -83,7 +84,6 @@ mod d24p2;
 mod d25p1;
 mod d25p2;
 
-
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -91,6 +91,8 @@ fn main() {
     let puzzle = args[2].parse::<u8>().unwrap();
 
     let input = utils::get_input(&format!("day{}", day));
+
+    let now = Instant::now();
 
     let solution = match (day, puzzle) {
         (1, 1) => d1p1::solve(&input),
@@ -170,6 +172,7 @@ fn main() {
 
         _ => panic!("No solver found"),
     };
+    println!("time: {}ns", now.elapsed().as_nanos());
 
     println!("Solution to day {} problem {}:", day, puzzle);
     println!("{}", solution);
