@@ -172,7 +172,12 @@ fn main() {
 
         _ => panic!("No solver found"),
     };
-    println!("time: {}ns", now.elapsed().as_nanos());
+
+    let millis = now.elapsed().as_millis();
+    let micros = now.elapsed().as_micros() - millis * 1000;
+    let nanos = now.elapsed().as_nanos() - millis * 1_000_000 - micros * 1000;
+
+    println!("time: {}ms {}μs {}ns", millis, micros, nanos);
 
     println!("Solution to day {} problem {}:", day, puzzle);
     println!("{}", solution);
