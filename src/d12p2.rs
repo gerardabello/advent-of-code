@@ -28,55 +28,55 @@ impl Waypoint {
         self.pos_y = -px;
     }
 
-    fn move_direction(&mut self, direction: Direction, ammount: u32) {
+    fn move_direction(&mut self, direction: Direction, amount: u32) {
         match direction {
             Direction::East => {
-                self.pos_x += ammount as i64;
+                self.pos_x += amount as i64;
             }
             Direction::West => {
-                self.pos_x -= ammount as i64;
+                self.pos_x -= amount as i64;
             }
             Direction::North => {
-                self.pos_y += ammount as i64;
+                self.pos_y += amount as i64;
             }
             Direction::South => {
-                self.pos_y -= ammount as i64;
+                self.pos_y -= amount as i64;
             }
         };
     }
 }
 
 impl Ship {
-    fn move_to_waypoint(&mut self, ammount: u32) {
-        self.pos_x += self.waypoint.pos_x * ammount as i64;
-        self.pos_y += self.waypoint.pos_y * ammount as i64;
+    fn move_to_waypoint(&mut self, amount: u32) {
+        self.pos_x += self.waypoint.pos_x * amount as i64;
+        self.pos_y += self.waypoint.pos_y * amount as i64;
     }
 
     fn apply_movement(&mut self, movement: &Movement) {
-        let ammount = movement.ammount;
+        let amount = movement.amount;
         match movement.kind {
-            MovementKind::East => self.waypoint.move_direction(Direction::East, ammount),
-            MovementKind::West => self.waypoint.move_direction(Direction::West, ammount),
-            MovementKind::North => self.waypoint.move_direction(Direction::North, ammount),
-            MovementKind::South => self.waypoint.move_direction(Direction::South, ammount),
+            MovementKind::East => self.waypoint.move_direction(Direction::East, amount),
+            MovementKind::West => self.waypoint.move_direction(Direction::West, amount),
+            MovementKind::North => self.waypoint.move_direction(Direction::North, amount),
+            MovementKind::South => self.waypoint.move_direction(Direction::South, amount),
 
             MovementKind::TurnLeft => {
-                assert!(ammount % 90 == 0);
-                let turns = ammount / 90;
+                assert!(amount % 90 == 0);
+                let turns = amount / 90;
                 for _ in 0..turns {
                     self.waypoint.turn_left();
                 }
             }
 
             MovementKind::TurnRight => {
-                assert!(ammount % 90 == 0);
-                let turns = ammount / 90;
+                assert!(amount % 90 == 0);
+                let turns = amount / 90;
                 for _ in 0..turns {
                     self.waypoint.turn_rigth();
                 }
             }
 
-            MovementKind::Forward => self.move_to_waypoint(ammount),
+            MovementKind::Forward => self.move_to_waypoint(amounamount
         };
     }
 }

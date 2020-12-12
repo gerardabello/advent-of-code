@@ -27,7 +27,7 @@ pub enum Direction {
 #[derive(Debug)]
 pub struct Movement {
     pub kind: MovementKind,
-    pub ammount: u32,
+    pub amount: u32,
 }
 
 #[derive(Debug)]
@@ -38,19 +38,19 @@ struct Ship {
 }
 
 impl Ship {
-    fn apply_direction_ammount(&mut self, direction: Direction, ammount: u32) {
+    fn apply_direction_amount(&mut self, direction: Direction, amount: u32) {
         match direction {
             Direction::East => {
-                self.pos_x += ammount as i64;
+                self.pos_x += amount as i64;
             }
             Direction::West => {
-                self.pos_x -= ammount as i64;
+                self.pos_x -= amount as i64;
             }
             Direction::North => {
-                self.pos_y -= ammount as i64;
+                self.pos_y -= amount as i64;
             }
             Direction::South => {
-                self.pos_y += ammount as i64;
+                self.pos_y += amount as i64;
             }
         };
     }
@@ -79,26 +79,26 @@ impl Ship {
     }
 
     fn apply_movement(&mut self, movement: &Movement) {
-        let ammount = movement.ammount;
+        let amount = movement.amount;
         match movement.kind {
-            MovementKind::East => self.apply_direction_ammount(Direction::East, ammount),
-            MovementKind::West => self.apply_direction_ammount(Direction::West, ammount),
-            MovementKind::North => self.apply_direction_ammount(Direction::North, ammount),
-            MovementKind::South => self.apply_direction_ammount(Direction::South, ammount),
+            MovementKind::East => self.apply_direction_amount(Direction::East, amount),
+            MovementKind::West => self.apply_direction_amount(Direction::West, amount),
+            MovementKind::North => self.apply_direction_amount(Direction::North, amount),
+            MovementKind::South => self.apply_direction_amount(Direction::South, amount),
 
-            MovementKind::Forward => self.apply_direction_ammount(self.direction.clone(), ammount),
+            MovementKind::Forward => self.apply_direction_amount(self.direction.clone(), amount),
 
             MovementKind::TurnLeft => {
-                assert!(ammount % 90 == 0);
-                let turns = ammount / 90;
+                assert!(amount % 90 == 0);
+                let turns = amount / 90;
                 for _ in 0..turns {
                     self.turn_left();
                 }
             }
 
             MovementKind::TurnRight => {
-                assert!(ammount % 90 == 0);
-                let turns = ammount / 90;
+                assert!(amount % 90 == 0);
+                let turns = amount / 90;
                 for _ in 0..turns {
                     self.turn_rigth();
                 }
@@ -128,9 +128,9 @@ fn parse_unsigned_integer_32(input: &str) -> IResult<&str, u32> {
 
 pub fn parse_movement(input: &str) -> IResult<&str, Movement> {
     let (input, kind) = parse_movement_kind(input)?;
-    let (input, ammount) = parse_unsigned_integer_32(input)?;
+    let (input, amount) = parse_unsigned_integer_32(input)?;
 
-    Ok((input, Movement { kind, ammount }))
+    Ok((input, Movement { kind, amount }))
 }
 
 pub fn solve(input: &str) -> String {
