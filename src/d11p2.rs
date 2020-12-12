@@ -12,22 +12,19 @@ struct Map {
 
 impl Map {
     fn print(&self) {
-        print!("\n");
-        print!("\n");
-        print!("\n");
-    for y in 0..self.grid.len() {
-        for x in 0..self.grid[y].len() {
-            if let Some(pos) = self.position(x as isize, y as isize) {
-                let c = match pos {
-                    Position::Free => "L",
-                    Position::Ocupied => "#",
-                    Position::Floor => ".",
-                };
-                print!("{}", c);
+        for y in 0..self.grid.len() {
+            for x in 0..self.grid[y].len() {
+                if let Some(pos) = self.position(x as isize, y as isize) {
+                    let c = match pos {
+                        Position::Free => "L",
+                        Position::Ocupied => "#",
+                        Position::Floor => ".",
+                    };
+                    print!("{}", c);
+                }
             }
+            println!();
         }
-        print!("\n");
-    }
     }
 
     fn set_position(&mut self, x: usize, y: usize, pos: Position) {
@@ -64,37 +61,34 @@ impl Map {
             let opos = self.position(px, py);
 
             if opos.is_none() {
-                return Position::Floor
+                return Position::Floor;
             }
 
             let pos = opos.unwrap();
 
             if pos == Position::Floor {
-                continue
+                continue;
             }
 
             return pos;
         }
-
     }
 
     fn sum_of_visible_occupieds(&self, x: usize, y: usize) -> u8 {
         let directions: [(isize, isize); 8] = [
-            (0,-1),
-            (-1,0),
-            (-1,-1),
-
-            (0,1),
-            (1,0),
-            (1,1),
-
-            (-1,1),
-            (1,-1),
+            (0, -1),
+            (-1, 0),
+            (-1, -1),
+            (0, 1),
+            (1, 0),
+            (1, 1),
+            (-1, 1),
+            (1, -1),
         ];
 
         directions
             .iter()
-            .map(|dir| self.next_seat_direction(x,y,*dir))
+            .map(|dir| self.next_seat_direction(x, y, *dir))
             .filter(|p| *p == Position::Ocupied)
             .count() as u8
     }
