@@ -76,7 +76,7 @@ impl Ship {
                 }
             }
 
-            MovementKind::Forward => self.move_to_waypoint(amounamount
+            MovementKind::Forward => self.move_to_waypoint(amount)
         };
     }
 }
