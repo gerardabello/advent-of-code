@@ -1,17 +1,17 @@
-use crate::d16p1::{parse_input, Rule, Ticket};
+use crate::d16p1::{parse_input, Rule};
 
-fn find_valid_rules<'a>(rules: &'a [Rule], numbers: &[u32]) -> Vec<String> {
+fn find_valid_rules<'a>(rules: &'a [Rule], numbers: &[u32]) -> Vec<&'a str> {
     rules
         .iter()
         .filter(|rule| numbers.iter().all(|n| rule.validate(*n)))
-        .map(|r| r.name.clone())
+        .map(|r| r.name.as_ref())
         .collect()
 }
 
-fn find_order_of_fields(rules: &[Rule], tickets: &[&Ticket]) -> Vec<String> {
+fn find_order_of_fields<'a> (rules: &'a [Rule], tickets: &[&[u32]]) -> Vec<&'a str> {
     let n_fields = tickets[0].len();
-    let mut ret: Vec<(usize, String)> = Vec::new();
-    let mut matched_rules: Vec<(usize, Vec<String>)> = Vec::new();
+    let mut ret: Vec<(usize, &str)> = Vec::new();
+    let mut matched_rules: Vec<(usize, Vec<&str>)> = Vec::new();
 
     // For each index, find all field that match
     for i in 0..n_fields {
@@ -31,7 +31,7 @@ fn find_order_of_fields(rules: &[Rule], tickets: &[&Ticket]) -> Vec<String> {
 
         let field = &matches[0];
 
-        ret.push((*index, field.clone()));
+        ret.push((*index, field));
 
         matched_rules = matched_rules
             .iter()
@@ -41,8 +41,8 @@ fn find_order_of_fields(rules: &[Rule], tickets: &[&Ticket]) -> Vec<String> {
                     matches
                         .iter()
                         .filter(|m| *m != field)
-                        .cloned()
-                        .collect::<Vec<String>>(),
+                        .copied()
+                        .collect::<Vec<&str>>(),
                 )
             })
             .collect();
@@ -54,16 +54,17 @@ fn find_order_of_fields(rules: &[Rule], tickets: &[&Ticket]) -> Vec<String> {
     ret.iter().map(|(_, field)| field).cloned().collect()
 }
 
-fn is_valid_ticket(rules: &[Rule], ticket: &Ticket) -> bool {
+fn is_valid_ticket(rules: &[Rule], ticket: &[u32]) -> bool {
     ticket.iter().all(|n| rules.iter().any(|r| r.validate(*n)))
 }
 
 pub fn solve(input: &str) -> String {
     let (_, (rules, my_ticket, tickets)) = parse_input(input).unwrap();
 
-    let mut valid_tickets: Vec<&Ticket> = tickets
+    let mut valid_tickets: Vec<&[u32]> = tickets
         .iter()
         .filter(|t| is_valid_ticket(&rules, t))
+        .map(|x| x.as_ref())
         .collect();
 
 

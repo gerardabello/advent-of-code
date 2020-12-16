@@ -1,7 +1,7 @@
 use nom::{
     bytes::complete::{tag, take_until},
     character::complete::digit1,
-    combinator::{map_res},
+    combinator::map_res,
     multi::separated_list1,
     IResult,
 };
@@ -15,8 +15,8 @@ pub struct Rule {
 }
 
 impl Rule {
-    pub fn validate(&self, n: u32) -> bool{
-        self.ranges.iter().any(|r| n>= r.0 && n<= r.1)
+    pub fn validate(&self, n: u32) -> bool {
+        self.ranges.iter().any(|r| n >= r.0 && n <= r.1)
     }
 }
 
@@ -33,7 +33,7 @@ fn parse_range(input: &str) -> IResult<&str, (u32, u32)> {
     let (input, _) = tag("-")(input)?;
     let (input, max) = parse_i32(input)?;
 
-    Ok((input,(min,max)))
+    Ok((input, (min, max)))
 }
 
 fn parse_rule(input: &str) -> IResult<&str, Rule> {
@@ -42,7 +42,13 @@ fn parse_rule(input: &str) -> IResult<&str, Rule> {
     let (input, _) = tag(" ")(input)?;
     let (input, ranges) = separated_list1(tag(" or "), parse_range)(input)?;
 
-    Ok((input, Rule { name: name.to_owned(), ranges }))
+    Ok((
+        input,
+        Rule {
+            name: name.to_owned(),
+            ranges,
+        },
+    ))
 }
 
 pub fn parse_input(input: &str) -> IResult<&str, (Vec<Rule>, Ticket, Vec<Ticket>)> {
@@ -60,8 +66,12 @@ pub fn parse_input(input: &str) -> IResult<&str, (Vec<Rule>, Ticket, Vec<Ticket>
 }
 
 pub fn solve(input: &str) -> String {
+    let (_, (rules, _, tickets)) = parse_input(input).unwrap();
 
-    let (_ ,(rules, _, tickets)) = parse_input(input).unwrap();
-
-    tickets.iter().flatten().filter(|n| rules.iter().all(|r| !r.validate(**n))).sum::<u32>().to_string()
+    tickets
+        .iter()
+        .flatten()
+        .filter(|n| rules.iter().all(|r| !r.validate(**n)))
+        .sum::<u32>()
+        .to_string()
 }
