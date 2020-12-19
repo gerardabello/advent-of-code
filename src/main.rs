@@ -89,8 +89,14 @@ fn main() {
 
     let day = args[1].parse::<u8>().unwrap();
     let puzzle = args[2].parse::<u8>().unwrap();
+    let example = args.len() > 3 && args[3] == "example";
 
-    let input = utils::get_input(&format!("day{}", day));
+    let file = match example {
+        true => format!("day{}example", day),
+        false => format!("day{}", day),
+    };
+
+    let input = utils::get_input(&file);
 
     let now = Instant::now();
 
