@@ -95,7 +95,7 @@ pub fn solve(input: &str) -> String {
         floor.flip_tile((x, y));
     }
 
-    for day in 1..101 {
+    for _ in 1..101 {
         floor.do_flipping();
         //println!("Day {}: {}", day, floor.n_black_tiles());
     }
