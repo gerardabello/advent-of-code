@@ -22,10 +22,10 @@ fn parse_direction(input: &str) -> IResult<&str, Direction> {
 }
 
 fn parse_command(input: &str) -> IResult<&str, Command> {
-    let (input, (direction, _, amount)) =
-        tuple((parse_direction, tag(" "), unsigned_int::<usize>))(input)?;
-
-    Ok((input, Command { direction, amount }))
+    map(
+        tuple((parse_direction, tag(" "), unsigned_int::<usize>)),
+        |(direction, _, amount)| Command { direction, amount },
+    )(input)
 }
 
 pub fn parse_commands(input: &str) -> IResult<&str, Vec<Command>> {
