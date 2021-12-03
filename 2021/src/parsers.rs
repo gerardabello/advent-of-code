@@ -4,27 +4,48 @@ use nom::{
     character::complete::digit1,
     character::complete::multispace0,
     combinator::eof,
-    combinator::{map_res, recognize},
+    combinator::{map, map_res, recognize},
     error::ParseError,
-    multi::separated_list1,
-    sequence::pair,
+    multi::{many1, separated_list1},
+    sequence::{pair, tuple},
     IResult, Parser,
 };
+
+/* CHEATSHEET
+========================
+# Tags to Enum
+    alt((
+        map(tag("left"), |_| Direction::Left),
+        map(tag("right"), |_| Direction::Right),
+        map(tag("up"), |_| Direction::Up),
+        map(tag("down"), |_| Direction::Down),
+    ))
+
+# Custom parser
+    pub fn custom<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
+    where
+        P: Parser<&'a str, O, E>,
+        E: ParseError<&'a str>,
+    {
+        move |input: &'a str| {
+            let (input, out) = parser.parse(input)?;
+            ... more stuff ...
+            Ok((input, out))
+        }
+    }
+
+
+*/
 
 /// Parses the input with `parser` and returns it if the remaining input is empty or only
 /// whitespace.
 #[allow(dead_code)]
-pub fn full<'a, O, E, P>(mut parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
+pub fn full<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
 where
     P: Parser<&'a str, O, E>,
     E: ParseError<&'a str>,
 {
-    move |input: &'a str| {
-        let (input, o1) = parser.parse(input)?;
-        let (input, _) = multispace0(input)?;
-        let (input, _) = eof(input)?;
-        Ok((input, o1))
-    }
+    map(tuple((parser, multispace0, eof)), |(o1, _, _)| o1)
 }
 
 pub trait UnsignedInt {}
@@ -65,4 +86,11 @@ where
     E: ParseError<&'a str>,
 {
     separated_list1(tag("\n"), parser)
+}
+
+#[allow(dead_code)]
+pub fn binary_str_to_decimal(input: &str) -> IResult<&str, usize> {
+    map_res(recognize(many1(alt((tag("0"), tag("1"))))), |bin_str| {
+        usize::from_str_radix(bin_str, 2)
+    })(input)
 }

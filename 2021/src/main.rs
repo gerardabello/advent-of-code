@@ -6,6 +6,7 @@ extern crate nom;
 
 mod solutions;
 mod parsers;
+mod matrix;
 
 pub fn get_input(day: usize, is_example: bool) -> String {
 
