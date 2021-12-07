@@ -4,12 +4,12 @@ use std::time::Instant;
 
 extern crate nom;
 
-mod solutions;
-mod parsers;
 mod matrix;
+mod parsers;
+mod solutions;
+//mod iter;
 
 pub fn get_input(day: usize, is_example: bool) -> String {
-
     let file = match is_example {
         true => format!("day{}example", day),
         false => format!("day{}", day),

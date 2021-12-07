@@ -1,13 +1,32 @@
-use nom::IResult;
+use nom::{bytes::complete::tag, multi::separated_list1};
 
-use crate::parsers::{full, lines, unsigned_int};
+use crate::parsers::{full, unsigned_int};
 
-pub fn parse_line(input: &str) -> IResult<&str, usize> {
-    unsigned_int::<usize>(input)
+fn advance_day(state: &[usize]) -> Vec<usize> {
+    let mut new_state = vec![];
+
+    for s in state {
+        match s {
+            0 => {
+                new_state.push(8);
+                new_state.push(6);
+            }
+            days => {
+                new_state.push(days - 1);
+            }
+        }
+    }
+
+    new_state
 }
 
 pub fn solve(input: &str) -> usize {
-    let (_, _) = full(lines(parse_line))(input).unwrap();
+    let (_, initial_state) = full(separated_list1(tag(","), unsigned_int::<usize>))(input).unwrap();
 
-    panic!("Not implemented");
+    let mut state = initial_state;
+    for _ in 0..80 {
+        state = advance_day(&state);
+    }
+
+    state.len()
 }

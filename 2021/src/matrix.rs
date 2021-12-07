@@ -22,3 +22,12 @@ pub fn filter_rows_by_value_at_column<T: std::cmp::PartialEq>(
         .into_iter()
         .filter(|row| row[column] == value).collect()
 }
+
+pub fn print<T : std::fmt::Display>(map: &[Vec<T>]) {
+    for row in map {
+        for v in row {
+            print!("{}", v);
+        }
+        println!();
+    }
+}
