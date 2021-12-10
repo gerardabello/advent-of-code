@@ -54,3 +54,85 @@ pub fn print_with_highlights<
         println!();
     }
 }
+
+#[allow(dead_code)]
+pub fn are_valid_isize_coordinates<T>(map: &[Vec<T>], x: isize, y: isize) -> bool {
+    let height = map.len();
+    let width = map[0].len();
+
+    if x < 0 || x >= width as isize {
+        return false;
+    }
+
+    if y < 0 || y >= height as isize {
+        return false;
+    }
+
+    true
+}
+
+#[allow(dead_code)]
+pub fn are_valid_usize_coordinates<T>(map: &[Vec<T>], x: usize, y: usize) -> bool {
+    let height = map.len();
+    let width = map[0].len();
+
+    if x >= width {
+        return false;
+    }
+
+    if y >= height {
+        return false;
+    }
+
+    true
+}
+
+#[allow(dead_code)]
+pub fn get_xy_signed_index<T: Copy>(map: &[Vec<T>], x: isize, y: isize) -> Option<T> {
+    if are_valid_isize_coordinates(map, x, y) {
+        return Some(map[y as usize][x as usize]);
+    }
+
+    None
+}
+
+#[allow(dead_code)]
+pub fn get_xy<T: Copy>(map: &[Vec<T>], x: usize, y: usize) -> Option<T> {
+    if are_valid_usize_coordinates(map, x, y) {
+        return Some(map[y as usize][x as usize]);
+    }
+
+    None
+}
+
+const SIMPLE_NEIGHBOURS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+const DIAGINAL_NEIGHBOURS: [(isize, isize); 4] = [(-1, -1), (1, 1), (1, -1), (-1, 1)];
+
+#[allow(dead_code)]
+pub fn neighbours<T: Copy>(
+    map: &[Vec<T>],
+    x: usize,
+    y: usize,
+) -> impl Iterator<Item = (T, usize, usize)> + '_ {
+    SIMPLE_NEIGHBOURS
+        .iter()
+        .map(move |(rx, ry)| (x as isize + rx, y as isize + ry))
+        .filter(|(nx, ny)| are_valid_isize_coordinates(map, *nx, *ny))
+        .map(|(nx, ny)| (nx as usize, ny as usize))
+        .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
+}
+
+#[allow(dead_code)]
+pub fn neighbours_with_diagonals<T: Copy>(
+    map: &[Vec<T>],
+    x: usize,
+    y: usize,
+) -> impl Iterator<Item = (T, usize, usize)> + '_ {
+    SIMPLE_NEIGHBOURS
+        .iter()
+        .chain(DIAGINAL_NEIGHBOURS.iter())
+        .map(move |(rx, ry)| (x as isize + rx, y as isize + ry))
+        .filter(|(nx, ny)| are_valid_isize_coordinates(map, *nx, *ny))
+        .map(|(nx, ny)| (nx as usize, ny as usize))
+        .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
+}

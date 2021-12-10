@@ -1,20 +1,15 @@
 use nom::multi::many1;
 
+use crate::matrix;
 use crate::parsers::full;
-use crate::solutions::day9::part1::{find_minimums, get_xy, parse_line};
+use crate::solutions::day9::part1::{find_minimums, parse_line};
 
 pub fn grow_basin(map: &[Vec<usize>], base: (usize, usize), basin: &mut Vec<(usize, usize)>) {
-    for (x_surround, y_surround) in [(-1, 0), (1, 0), (0, -1), (0, 1)] {
-        let neighbour_x = base.0 as i32 + x_surround;
-        let neighbour_y = base.1 as i32 + y_surround;
-        let neighbour_v = get_xy(map, neighbour_x, neighbour_y);
-        if neighbour_v.is_some() && neighbour_v.unwrap() < 9 {
-            // here we know that neighbour coordinates are within bounds (so not negative)
-            let neighbour_usize = (neighbour_x as usize, neighbour_y as usize);
-            if !basin.contains(&neighbour_usize) {
-                basin.push(neighbour_usize);
-                grow_basin(map, neighbour_usize, basin);
-            }
+    for (neighbour_val, neighbour_x, neighbour_y) in matrix::neighbours(map, base.0, base.1) {
+        let neighbour_pos = (neighbour_x, neighbour_y);
+        if neighbour_val < 9 && !basin.contains(&neighbour_pos) {
+            basin.push(neighbour_pos);
+            grow_basin(map, neighbour_pos, basin);
         }
     }
 }

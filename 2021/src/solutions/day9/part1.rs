@@ -17,35 +17,14 @@ pub fn parse_line(input: &str) -> IResult<&str, Vec<usize>> {
     Ok((input, numbers))
 }
 
-pub fn get_xy(map: &[Vec<usize>], x: i32, y: i32) -> Option<usize> {
-    let height = map.len();
-    let width = map[0].len();
-
-    if x < 0 || x >= width as i32 {
-        return None;
-    }
-
-    if y < 0 || y >= height as i32 {
-        return None;
-    }
-
-    Some(map[y as usize][x as usize])
-}
-
 pub fn find_minimums(map: &[Vec<usize>]) -> Vec<(usize, usize)> {
     let mut minimums: Vec<(usize, usize)> = vec![];
 
     for (y, row) in map.iter().enumerate() {
         'main: for (x, val) in row.iter().enumerate() {
-            for x_surround in -1..2 {
-                for y_surround in -1..2 {
-                    if x_surround != 0 || y_surround != 0 {
-                        let surround_result =
-                            get_xy(map, x as i32 + x_surround, y as i32 + y_surround);
-                        if surround_result.is_some() && surround_result.unwrap() <= *val {
-                            continue 'main;
-                        }
-                    }
+            for (n_val, _, _) in matrix::neighbours(map, x, y) {
+                if n_val <= *val {
+                    continue 'main;
                 }
             }
             minimums.push((x, y));
@@ -64,7 +43,7 @@ pub fn solve(input: &str) -> usize {
 
     minimums
         .into_iter()
-        .map(|(x, y)| get_xy(&map, x as i32, y as i32).unwrap())
+        .map(|(x, y)| matrix::get_xy(&map, x, y).unwrap())
         .map(|h| h + 1)
         .sum()
 }
