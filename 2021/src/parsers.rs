@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use nom::{
     branch::alt,
     bytes::complete::tag,
@@ -40,7 +42,6 @@ use nom::{
 
 /// Parses the input with `parser` and returns it if the remaining input is empty or only
 /// whitespace.
-#[allow(dead_code)]
 pub fn full<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
 where
     P: Parser<&'a str, O, E>,
@@ -57,7 +58,6 @@ impl UnsignedInt for u32 {}
 impl UnsignedInt for u64 {}
 impl UnsignedInt for u128 {}
 
-#[allow(dead_code)]
 pub fn unsigned_int<T: UnsignedInt + std::str::FromStr>(input: &str) -> IResult<&str, T> {
     map_res(recognize(digit1), str::parse)(input)
 }
@@ -70,7 +70,6 @@ impl SignedInt for i32 {}
 impl SignedInt for i64 {}
 impl SignedInt for i128 {}
 
-#[allow(dead_code)]
 pub fn signed_int<T: SignedInt + std::str::FromStr>(input: &str) -> IResult<&str, T> {
     alt((
         map_res(recognize(digit1), str::parse),
@@ -80,7 +79,6 @@ pub fn signed_int<T: SignedInt + std::str::FromStr>(input: &str) -> IResult<&str
 }
 
 // Uses `parser` on multiple lines and returns each output inside a Vec
-#[allow(dead_code)]
 pub fn lines<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, Vec<O>, E>
 where
     P: Parser<&'a str, O, E>,
@@ -89,19 +87,16 @@ where
     separated_list1(tag("\n"), parser)
 }
 
-#[allow(dead_code)]
 pub fn binary_str_to_decimal(input: &str) -> IResult<&str, usize> {
     map_res(recognize(many1(alt((tag("0"), tag("1"))))), |bin_str| {
         usize::from_str_radix(bin_str, 2)
     })(input)
 }
 
-#[allow(dead_code)]
 pub fn single_digit(input: &str) -> IResult<&str, usize> {
     map_res(take(1_usize), str::parse)(input)
 }
 
-#[allow(dead_code)]
 pub fn matrix_of_digits(input: &str) -> IResult<&str, Vec<Vec<usize>>> {
     map_res(lines(many1(single_digit)), |matrix| {
         if matrix.iter().all(|row| row.len() == matrix[0].len()) {

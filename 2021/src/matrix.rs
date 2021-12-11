@@ -1,41 +1,30 @@
-#[allow(dead_code)]
-pub fn transpose<T>(v: Vec<Vec<T>>) -> Vec<Vec<T>> {
-    assert!(!v.is_empty());
-    let len = v[0].len();
-    let mut iters: Vec<_> = v.into_iter().map(|n| n.into_iter()).collect();
-    (0..len)
-        .map(|_| {
-            iters
-                .iter_mut()
-                .map(|n| n.next().unwrap())
-                .collect::<Vec<T>>()
+#![allow(dead_code)]
+
+pub fn transposed_iter<'iter, Column, Item: 'iter>(
+    columns: &'iter [Column],
+) -> impl Iterator<Item = impl Iterator<Item = &'iter Item>>
+where
+    &'iter Column: IntoIterator<Item = &'iter Item>,
+{
+    (0..).scan((), move |&mut (), row_idx| {
+        Some({
+            let mut columns_iterator = columns.iter();
+            let first_column = columns_iterator.next()?;
+            let first: &'iter Item = first_column.into_iter().nth(row_idx)?;
+            Iterator::chain(
+                ::core::iter::once(first),
+                columns_iterator.map(move |column| {
+                    column.into_iter().nth(row_idx).unwrap() // assumes the columns are of equal length
+                }),
+            )
         })
-        .collect()
+    })
 }
 
-#[allow(dead_code)]
-pub fn filter_rows_by_value_at_column<T: std::cmp::PartialEq>(
-    matrix: Vec<Vec<T>>,
-    column: usize,
-    value: T,
-) -> Vec<Vec<T>> {
-    matrix
-        .into_iter()
-        .filter(|row| row[column] == value)
-        .collect()
-}
-
-#[allow(dead_code)]
 pub fn print<T: std::fmt::Display>(map: &[Vec<T>]) {
-    for row in map {
-        for v in row {
-            print!("{:<2}", v);
-        }
-        println!();
-    }
+    print_with_highlights(map, |_, _, _| false)
 }
 
-#[allow(dead_code)]
 pub fn print_with_highlights<
     T: std::fmt::Display + std::marker::Sized,
     F: Fn(usize, usize, &T) -> bool,
@@ -55,7 +44,6 @@ pub fn print_with_highlights<
     }
 }
 
-#[allow(dead_code)]
 pub fn are_valid_isize_coordinates<T>(map: &[Vec<T>], x: isize, y: isize) -> bool {
     let height = map.len();
     let width = map[0].len();
@@ -71,7 +59,6 @@ pub fn are_valid_isize_coordinates<T>(map: &[Vec<T>], x: isize, y: isize) -> boo
     true
 }
 
-#[allow(dead_code)]
 pub fn are_valid_usize_coordinates<T>(map: &[Vec<T>], x: usize, y: usize) -> bool {
     let height = map.len();
     let width = map[0].len();
@@ -87,7 +74,6 @@ pub fn are_valid_usize_coordinates<T>(map: &[Vec<T>], x: usize, y: usize) -> boo
     true
 }
 
-#[allow(dead_code)]
 pub fn get_xy_signed_index<T: Copy>(map: &[Vec<T>], x: isize, y: isize) -> Option<T> {
     if are_valid_isize_coordinates(map, x, y) {
         return Some(map[y as usize][x as usize]);
@@ -96,7 +82,6 @@ pub fn get_xy_signed_index<T: Copy>(map: &[Vec<T>], x: isize, y: isize) -> Optio
     None
 }
 
-#[allow(dead_code)]
 pub fn get_xy<T: Copy>(map: &[Vec<T>], x: usize, y: usize) -> Option<T> {
     if are_valid_usize_coordinates(map, x, y) {
         return Some(map[y as usize][x as usize]);
@@ -108,7 +93,6 @@ pub fn get_xy<T: Copy>(map: &[Vec<T>], x: usize, y: usize) -> Option<T> {
 const SIMPLE_NEIGHBOURS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
 const DIAGINAL_NEIGHBOURS: [(isize, isize); 4] = [(-1, -1), (1, 1), (1, -1), (-1, 1)];
 
-#[allow(dead_code)]
 pub fn neighbours<T: Copy>(
     map: &[Vec<T>],
     x: usize,
@@ -122,7 +106,6 @@ pub fn neighbours<T: Copy>(
         .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
 }
 
-#[allow(dead_code)]
 pub fn neighbours_with_diagonals<T: Copy>(
     map: &[Vec<T>],
     x: usize,
@@ -137,7 +120,6 @@ pub fn neighbours_with_diagonals<T: Copy>(
         .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
 }
 
-#[allow(dead_code)]
 pub fn mutate_all<T, F>(map: &mut Vec<Vec<T>>, f: F)
 where
     F: Fn(&mut T),

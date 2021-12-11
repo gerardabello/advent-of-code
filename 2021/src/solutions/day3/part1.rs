@@ -1,6 +1,6 @@
 use nom::{branch::alt, bytes::complete::tag, multi::many1, IResult};
 
-use crate::matrix::transpose;
+use crate::matrix::transposed_iter;
 use crate::parsers::{binary_str_to_decimal, full, lines};
 
 pub fn parse_0_1_line(input: &str) -> IResult<&str, Vec<&str>> {
@@ -12,12 +12,10 @@ pub fn solve(input: &str) -> usize {
     let binary_length = matrix[0].len();
     let number_of_inputs = matrix.len();
 
-    let gamma_bits = transpose(matrix)
-        .into_iter()
+    let gamma_bits = transposed_iter(&matrix)
         .map(|column| {
             // Sum all the column, sum the "1"s, and check if we have more then half the number
             match column
-                .into_iter()
                 .map(|v| str::parse::<usize>(v).unwrap())
                 .sum::<usize>()
                 > number_of_inputs / 2

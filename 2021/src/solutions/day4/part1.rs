@@ -5,7 +5,7 @@ use nom::{
     IResult,
 };
 
-use crate::matrix::transpose;
+use crate::matrix::transposed_iter;
 use crate::parsers::{full, lines, unsigned_int};
 
 pub type Board = Vec<Vec<usize>>;
@@ -50,8 +50,8 @@ pub fn check_board(calls: &[usize], board: BoardSlice) -> bool {
         }
     }
 
-    for row in transpose(board.to_owned()) {
-        if row.iter().all(|v| calls.contains(v)) {
+    for mut row_iter in transposed_iter(board) {
+        if row_iter.all(|v| calls.contains(v)) {
             return true;
         }
     }

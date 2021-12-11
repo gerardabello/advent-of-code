@@ -1,12 +1,29 @@
-use crate::matrix::{filter_rows_by_value_at_column, transpose};
+use crate::matrix::transposed_iter;
 use crate::parsers::{binary_str_to_decimal, full, lines};
 use crate::solutions::day3::part1::parse_0_1_line;
 
-fn most_common_bit(matrix: Vec<Vec<&str>>, column: usize) -> &str {
-    let transposed = transpose(matrix);
+fn filter_rows_by_value_at_column<T: std::cmp::PartialEq>(
+    matrix: Vec<Vec<T>>,
+    column: usize,
+    value: T,
+) -> Vec<Vec<T>> {
+    matrix
+        .into_iter()
+        .filter(|row| row[column] == value)
+        .collect()
+}
 
-    let number_of_1 = transposed[column].iter().filter(|v| **v == "1").count();
-    let number_of_0 = transposed[column].iter().filter(|v| **v == "0").count();
+fn most_common_bit<'a>(matrix: &[Vec<&'a str>], column: usize) -> &'a str {
+    let number_of_1 = transposed_iter(matrix)
+        .nth(column)
+        .unwrap()
+        .filter(|v| **v == "1")
+        .count();
+    let number_of_0 = transposed_iter(matrix)
+        .nth(column)
+        .unwrap()
+        .filter(|v| **v == "0")
+        .count();
 
     if number_of_1 >= number_of_0 {
         "1"
@@ -15,11 +32,17 @@ fn most_common_bit(matrix: Vec<Vec<&str>>, column: usize) -> &str {
     }
 }
 
-fn least_common_bit(matrix: Vec<Vec<&str>>, column: usize) -> &str {
-    let transposed = transpose(matrix);
-
-    let number_of_1 = transposed[column].iter().filter(|v| **v == "1").count();
-    let number_of_0 = transposed[column].iter().filter(|v| **v == "0").count();
+fn least_common_bit<'a>(matrix: &[Vec<&'a str>], column: usize) -> &'a str {
+    let number_of_1 = transposed_iter(matrix)
+        .nth(column)
+        .unwrap()
+        .filter(|v| **v == "1")
+        .count();
+    let number_of_0 = transposed_iter(matrix)
+        .nth(column)
+        .unwrap()
+        .filter(|v| **v == "0")
+        .count();
 
     if number_of_0 <= number_of_1 {
         "0"
@@ -35,7 +58,7 @@ pub fn solve(input: &str) -> usize {
 
     let mut oxigen_mat = matrix.clone();
     for column in 0..binary_length {
-        let common_bit = most_common_bit(oxigen_mat.clone(), column);
+        let common_bit = most_common_bit(&oxigen_mat, column);
         oxigen_mat = filter_rows_by_value_at_column(oxigen_mat, column, common_bit);
         if oxigen_mat.len() == 1 {
             break;
@@ -44,7 +67,7 @@ pub fn solve(input: &str) -> usize {
 
     let mut co2_mat = matrix.clone();
     for column in 0..binary_length {
-        let common_bit = least_common_bit(co2_mat.clone(), column);
+        let common_bit = least_common_bit(&co2_mat, column);
         co2_mat = filter_rows_by_value_at_column(co2_mat, column, common_bit);
         if co2_mat.len() == 1 {
             break;
