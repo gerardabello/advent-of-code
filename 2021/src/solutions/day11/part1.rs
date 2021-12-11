@@ -1,10 +1,8 @@
-use crate::matrix::neighbours_with_diagonals;
+use crate::matrix::{neighbours_with_diagonals, mutate_all};
 use crate::parsers::{full, matrix_of_digits};
 
 pub fn step(octopuses: &mut Vec<Vec<usize>>) -> usize {
-    octopuses
-        .iter_mut()
-        .for_each(|row| row.iter_mut().for_each(|v| *v += 1));
+    mutate_all(octopuses,|v| *v += 1);
 
     let mut positions_flashed = vec![];
     loop {

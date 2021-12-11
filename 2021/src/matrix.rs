@@ -136,3 +136,12 @@ pub fn neighbours_with_diagonals<T: Copy>(
         .map(|(nx, ny)| (nx as usize, ny as usize))
         .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
 }
+
+#[allow(dead_code)]
+pub fn mutate_all<T, F>(map: &mut Vec<Vec<T>>, f: F)
+where
+    F: Fn(&mut T),
+{
+    map.iter_mut()
+        .for_each(|row| row.iter_mut().for_each(|v| f(v)));
+}
