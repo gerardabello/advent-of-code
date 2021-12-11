@@ -1,6 +1,7 @@
 use nom::{
     branch::alt,
     bytes::complete::tag,
+    bytes::complete::take,
     character::complete::digit1,
     character::complete::multispace0,
     combinator::eof,
@@ -92,5 +93,21 @@ where
 pub fn binary_str_to_decimal(input: &str) -> IResult<&str, usize> {
     map_res(recognize(many1(alt((tag("0"), tag("1"))))), |bin_str| {
         usize::from_str_radix(bin_str, 2)
+    })(input)
+}
+
+#[allow(dead_code)]
+pub fn single_digit(input: &str) -> IResult<&str, usize> {
+    map_res(take(1_usize), str::parse)(input)
+}
+
+#[allow(dead_code)]
+pub fn matrix_of_digits(input: &str) -> IResult<&str, Vec<Vec<usize>>> {
+    map_res(lines(many1(single_digit)), |matrix| {
+        if matrix.iter().all(|row| row.len() == matrix[0].len()) {
+            Ok(matrix)
+        } else {
+            Err("uneven rows in parsed matrix")
+        }
     })(input)
 }

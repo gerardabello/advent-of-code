@@ -1,8 +1,6 @@
-use nom::multi::many1;
-
 use crate::matrix;
-use crate::parsers::full;
-use crate::solutions::day9::part1::{find_minimums, parse_line};
+use crate::parsers::{full, matrix_of_digits};
+use crate::solutions::day9::part1::find_minimums;
 
 pub fn grow_basin(map: &[Vec<usize>], base: (usize, usize), basin: &mut Vec<(usize, usize)>) {
     for (neighbour_val, neighbour_x, neighbour_y) in matrix::neighbours(map, base.0, base.1) {
@@ -15,7 +13,7 @@ pub fn grow_basin(map: &[Vec<usize>], base: (usize, usize), basin: &mut Vec<(usi
 }
 
 pub fn solve(input: &str) -> usize {
-    let (_, map) = full(many1(parse_line))(input).unwrap();
+    let (_, map) = full(matrix_of_digits)(input).unwrap();
 
     let minimums = find_minimums(&map);
 

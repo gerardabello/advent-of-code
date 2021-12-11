@@ -1,21 +1,5 @@
-use nom::{
-    bytes::complete::{tag, take},
-    combinator::map,
-    multi::{many1, many_till},
-    IResult,
-};
-
 use crate::matrix;
-use crate::parsers::full;
-
-pub fn parse_line(input: &str) -> IResult<&str, Vec<usize>> {
-    let (input, (numbers, _)) = many_till(
-        map(take(1_usize), |c: &str| c.parse::<usize>().unwrap()),
-        tag("\n"),
-    )(input)?;
-
-    Ok((input, numbers))
-}
+use crate::parsers::{full, matrix_of_digits};
 
 pub fn find_minimums(map: &[Vec<usize>]) -> Vec<(usize, usize)> {
     let mut minimums: Vec<(usize, usize)> = vec![];
@@ -35,7 +19,7 @@ pub fn find_minimums(map: &[Vec<usize>]) -> Vec<(usize, usize)> {
 }
 
 pub fn solve(input: &str) -> usize {
-    let (_, map) = full(many1(parse_line))(input).unwrap();
+    let (_, map) = full(matrix_of_digits)(input).unwrap();
 
     let minimums = find_minimums(&map);
 
