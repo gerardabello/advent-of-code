@@ -4,6 +4,7 @@ use std::time::Instant;
 
 extern crate nom;
 
+mod slice;
 mod matrix;
 mod parsers;
 mod solutions;
