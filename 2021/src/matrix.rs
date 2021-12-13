@@ -44,6 +44,21 @@ pub fn print_with_highlights<
     }
 }
 
+pub fn print_bool(
+    map: &[Vec<bool>],
+) {
+    for row in map.iter() {
+        for v in row.iter() {
+            if *v {
+                print!("# ");
+            } else {
+                print!(". ");
+            }
+        }
+        println!();
+    }
+}
+
 pub fn are_valid_isize_coordinates<T>(map: &[Vec<T>], x: isize, y: isize) -> bool {
     let height = map.len();
     let width = map[0].len();
@@ -126,4 +141,17 @@ where
 {
     map.iter_mut()
         .for_each(|row| row.iter_mut().for_each(|v| f(v)));
+}
+
+pub fn bool_from_coordinates(coordinates: &[(usize, usize)]) -> Vec<Vec<bool>> {
+    let max_x = coordinates.iter().map(|(x, _)| *x).max().unwrap();
+    let max_y = coordinates.iter().map(|(_, y)| *y).max().unwrap();
+
+    let mut map = vec![vec![false; max_x + 1]; max_y + 1];
+
+    for (x, y) in coordinates {
+        map[*y][*x] = true;
+    }
+
+    map
 }

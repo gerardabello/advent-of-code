@@ -1,13 +1,17 @@
-use nom::IResult;
+use crate::matrix::{bool_from_coordinates, print_bool};
+use crate::solutions::day13::part1::{fold_coordinates, parse_input};
 
-use crate::parsers::{full, lines, unsigned_int};
+pub fn solve(input: &str) -> &'static str {
+    let (dot_coordinates, folds) = parse_input(input);
 
-pub fn parse_line(input: &str) -> IResult<&str, usize> {
-    unsigned_int::<usize>(input)
-}
+    let mut folded_coordinates = dot_coordinates;
 
-pub fn solve(input: &str) -> usize {
-    let (_, _) = full(lines(parse_line))(input).unwrap();
+    for fold in folds {
+        folded_coordinates = fold_coordinates(&folded_coordinates, fold);
+    }
 
-    panic!("Not implemented");
+    let map = bool_from_coordinates(&folded_coordinates);
+    print_bool(&map);
+
+    "Read string ☝️"
 }
