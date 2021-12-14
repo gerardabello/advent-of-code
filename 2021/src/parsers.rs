@@ -6,8 +6,9 @@ use nom::{
     bytes::complete::take,
     character::complete::digit1,
     character::complete::multispace0,
+    character::is_alphabetic,
     combinator::eof,
-    combinator::{map, map_res, recognize},
+    combinator::{map, map_opt, map_res, recognize},
     error::ParseError,
     multi::{many1, separated_list1},
     sequence::{pair, tuple},
@@ -95,6 +96,16 @@ pub fn binary_str_to_decimal(input: &str) -> IResult<&str, usize> {
 
 pub fn single_digit(input: &str) -> IResult<&str, usize> {
     map_res(take(1_usize), str::parse)(input)
+}
+
+pub fn single_letter(input: &str) -> IResult<&str, char> {
+    map_opt(take(1_usize), |b: &str| {
+        let c = b.chars().nth(0).unwrap();
+        match is_alphabetic(c as u8) {
+            true => Some(c),
+            false => None,
+        }
+    })(input)
 }
 
 pub fn matrix_of_digits(input: &str) -> IResult<&str, Vec<Vec<usize>>> {
