@@ -12,6 +12,7 @@ use nom::{
 
 use crate::parsers::full;
 
+// runs parser and asserts that the remaining input is [maybe some 0s][maybe some whitespace][eof]
 fn full_with_zeros<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, O, E>
 where
     P: Parser<&'a str, O, E>,
