@@ -44,9 +44,7 @@ pub fn print_with_highlights<
     }
 }
 
-pub fn print_bool(
-    map: &[Vec<bool>],
-) {
+pub fn print_bool(map: &[Vec<bool>]) {
     for row in map.iter() {
         for v in row.iter() {
             if *v {
