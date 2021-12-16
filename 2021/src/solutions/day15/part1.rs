@@ -17,6 +17,7 @@ pub fn path_cost(map: &[Vec<usize>], path: &[(usize, usize)]) -> usize {
         .sum()
 }
 
+#[allow(dead_code)]
 pub fn manhattan_distance_to_end(map: &[Vec<usize>], path: &[(usize, usize)]) -> usize {
     let height = map.len();
     let width = map[0].len();
