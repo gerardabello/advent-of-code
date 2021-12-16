@@ -1,13 +1,50 @@
-use nom::IResult;
+use crate::solutions::day16::part1::{hex_to_binary, parse_input, Packet};
 
-use crate::parsers::{full, lines, unsigned_int};
+pub fn eval_packet(packet: &Packet) -> usize {
+    match packet {
+        Packet::LiteralValue { value, .. } => *value,
+        Packet::Operator { header, children } => match header.type_id {
+            0 => children.iter().map(eval_packet).sum(),
+            1 => children.iter().map(eval_packet).product(),
+            2 => children.iter().map(eval_packet).min().unwrap(),
+            3 => children.iter().map(eval_packet).max().unwrap(),
+            5 => {
+                assert!(children.len() == 2);
 
-pub fn parse_line(input: &str) -> IResult<&str, usize> {
-    unsigned_int::<usize>(input)
+                if eval_packet(&children[0]) > eval_packet(&children[1]) {
+                    1
+                } else {
+                    0
+                }
+            }
+
+            6 => {
+                assert!(children.len() == 2);
+
+                if eval_packet(&children[0]) < eval_packet(&children[1]) {
+                    1
+                } else {
+                    0
+                }
+            }
+
+            7 => {
+                assert!(children.len() == 2);
+
+                if eval_packet(&children[0]) == eval_packet(&children[1]) {
+                    1
+                } else {
+                    0
+                }
+            }
+
+            _ => unreachable!("Unexpected type_id '{}'", header.type_id),
+        },
+    }
 }
 
 pub fn solve(input: &str) -> usize {
-    let (_, _) = full(lines(parse_line))(input).unwrap();
+    let packet = parse_input(&hex_to_binary(input));
 
-    panic!("Not implemented");
+    eval_packet(&packet)
 }
