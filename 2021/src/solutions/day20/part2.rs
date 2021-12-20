@@ -1,7 +1,14 @@
-use super::part1::parse_input;
+use super::part1::{enhance_times, parse_input};
 
 pub fn solve(input: &str) -> usize {
-    let _ = parse_input(input);
+    let (filter, map) = parse_input(input);
 
-    panic!("Not implemented");
+    let enhanced_map = enhance_times(&filter, &map, 50);
+
+    enhanced_map
+        .iter()
+        .map(|row| row.iter())
+        .flatten()
+        .filter(|b| **b)
+        .count()
 }

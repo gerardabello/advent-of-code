@@ -103,15 +103,35 @@ pub fn get_xy<T: Copy>(map: &[Vec<T>], x: usize, y: usize) -> Option<T> {
     None
 }
 
-const SIMPLE_NEIGHBOURS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
-const DIAGINAL_NEIGHBOURS: [(isize, isize); 4] = [(-1, -1), (1, 1), (1, -1), (-1, 1)];
+const NEIGHBOURS: [(isize, isize); 4] = [(0, -1), (-1, 0), (1, 0), (0, 1)];
+const NEIGHBOURS_WIH_DIAGINALS: [(isize, isize); 8] = [
+    (-1, -1),
+    (0, -1),
+    (1, -1),
+    (-1, 0),
+    (1, 0),
+    (-1, 1),
+    (0, 1),
+    (1, 1),
+];
+const NEIGHBOURS_WIH_DIAGINALS_AND_SELF: [(isize, isize); 9] = [
+    (-1, -1),
+    (0, -1),
+    (1, -1),
+    (-1, 0),
+    (0, 0),
+    (1, 0),
+    (-1, 1),
+    (0, 1),
+    (1, 1),
+];
 
 pub fn neighbours<T: Copy>(
     map: &[Vec<T>],
     x: usize,
     y: usize,
 ) -> impl Iterator<Item = (T, usize, usize)> + '_ {
-    SIMPLE_NEIGHBOURS
+    NEIGHBOURS
         .iter()
         .map(move |(rx, ry)| (x as isize + rx, y as isize + ry))
         .filter(|(nx, ny)| are_valid_isize_coordinates(map, *nx, *ny))
@@ -124,9 +144,21 @@ pub fn neighbours_with_diagonals<T: Copy>(
     x: usize,
     y: usize,
 ) -> impl Iterator<Item = (T, usize, usize)> + '_ {
-    SIMPLE_NEIGHBOURS
+    NEIGHBOURS_WIH_DIAGINALS
         .iter()
-        .chain(DIAGINAL_NEIGHBOURS.iter())
+        .map(move |(rx, ry)| (x as isize + rx, y as isize + ry))
+        .filter(|(nx, ny)| are_valid_isize_coordinates(map, *nx, *ny))
+        .map(|(nx, ny)| (nx as usize, ny as usize))
+        .map(|(nx, ny)| (get_xy(map, nx, ny).unwrap(), nx, ny))
+}
+
+pub fn neighbours_with_diagonals_and_self<T: Copy>(
+    map: &[Vec<T>],
+    x: usize,
+    y: usize,
+) -> impl Iterator<Item = (T, usize, usize)> + '_ {
+    NEIGHBOURS_WIH_DIAGINALS_AND_SELF
+        .iter()
         .map(move |(rx, ry)| (x as isize + rx, y as isize + ry))
         .filter(|(nx, ny)| are_valid_isize_coordinates(map, *nx, *ny))
         .map(|(nx, ny)| (nx as usize, ny as usize))
@@ -139,6 +171,27 @@ where
 {
     map.iter_mut()
         .for_each(|row| row.iter_mut().for_each(|v| f(v)));
+}
+
+pub fn pad<T>(map: &[Vec<T>], pad: usize, value: T) -> Vec<Vec<T>>
+where
+    T: Copy,
+{
+    let original_width = map[0].len();
+    let original_height = map.len();
+
+    let mut nm = vec![vec![value; original_width + pad * 2]; original_height + pad * 2];
+
+    for (y, row) in map.iter().enumerate() {
+        for (x, val) in row.iter().enumerate() {
+            let fx = x + pad;
+            let fy = y + pad;
+
+            nm[fy][fx] = *val;
+        }
+    }
+
+    nm
 }
 
 pub fn bool_from_coordinates(coordinates: &[(usize, usize)]) -> Vec<Vec<bool>> {

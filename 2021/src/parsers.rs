@@ -13,6 +13,7 @@ use nom::{
     multi::{many1, separated_list1},
     sequence::{pair, tuple},
     IResult, Parser,
+    error::FromExternalError
 };
 
 /* CHEATSHEET
@@ -98,9 +99,16 @@ pub fn single_digit(input: &str) -> IResult<&str, usize> {
     map_res(take(1_usize), str::parse)(input)
 }
 
+pub fn hash_dot_bool(input: &str) -> IResult<&str, bool> {
+    alt((
+        map(tag("."), |_| false),
+        map(tag("#"), |_| true),
+    ))(input)
+}
+
 pub fn single_letter(input: &str) -> IResult<&str, char> {
     map_opt(take(1_usize), |b: &str| {
-        let c = b.chars().nth(0).unwrap();
+        let c = b.chars().next().unwrap();
         match is_alphabetic(c as u8) {
             true => Some(c),
             false => None,
@@ -116,4 +124,18 @@ pub fn matrix_of_digits(input: &str) -> IResult<&str, Vec<Vec<usize>>> {
             Err("uneven rows in parsed matrix")
         }
     })(input)
+}
+
+pub fn matrix_of<'a, O, E, P>(parser: P) -> impl FnMut(&'a str) -> IResult<&'a str, Vec<Vec<O>>, E>
+where
+    P: Parser<&'a str, O, E>,
+    E: ParseError<&'a str> + FromExternalError<&'a str, &'a str>,
+{
+    map_res(lines(many1(parser)), |matrix| {
+        if matrix.iter().all(|row| row.len() == matrix[0].len()) {
+            Ok(matrix)
+        } else {
+            Err("uneven rows in parsed matrix")
+        }
+    })
 }
