@@ -2,8 +2,8 @@ use nom::{bytes::complete::tag, multi::separated_list1, sequence::tuple, IResult
 
 use crate::parsers::{full, lines, signed_int, unsigned_int};
 
-pub type Position = (isize, isize, isize);
-pub type Rotation = (u8, u8, u8);
+pub type Position = [isize;3];
+pub type Rotation = [u8;3];
 
 #[derive(Debug, Clone)]
 pub struct Scanner {
@@ -22,7 +22,7 @@ fn parse_position(input: &str) -> IResult<&str, Position> {
         signed_int::<isize>,
     ))(input)?;
 
-    Ok((input, (x, y, z)))
+    Ok((input, [x, y, z]))
 }
 
 fn parse_scanner(input: &str) -> IResult<&str, Scanner> {

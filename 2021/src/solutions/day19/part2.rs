@@ -10,9 +10,9 @@ pub fn solve(input: &str) -> usize {
 
     for s1 in &positioned_scanners {
         for s2 in &positioned_scanners {
-            let distance = (s1.position.unwrap().0 - s2.position.unwrap().0).abs()
-                + (s1.position.unwrap().1 - s2.position.unwrap().1).abs()
-                + (s1.position.unwrap().2 - s2.position.unwrap().2).abs();
+            let distance = (s1.position.unwrap()[0] - s2.position.unwrap()[0]).abs()
+                + (s1.position.unwrap()[1] - s2.position.unwrap()[1]).abs()
+                + (s1.position.unwrap()[2] - s2.position.unwrap()[2]).abs();
 
             if distance > max {
                 max = distance;

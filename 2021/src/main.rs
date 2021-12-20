@@ -7,6 +7,7 @@ extern crate nom;
 mod iter;
 mod matrix;
 mod parsers;
+mod point;
 mod solutions;
 
 pub fn get_input(day: usize, is_example: bool) -> String {
