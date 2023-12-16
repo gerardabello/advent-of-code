@@ -1,4 +1,4 @@
-use super::{Gift, parse_input};
+use super::{parse_input, Gift};
 
 fn wrapping_paper_needed(gift: &Gift) -> u32 {
     let sides = [gift.0 * gift.1, gift.0 * gift.2, gift.1 * gift.2];
