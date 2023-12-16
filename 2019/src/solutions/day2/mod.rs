@@ -8,6 +8,6 @@ use crate::parser::number_list;
 
 use nom::character::complete::char;
 
-pub fn parse_input(input: &str) -> Vec<u32> {
+pub fn parse_input(input: &str) -> Vec<usize> {
     return number_list(char(','))(input).unwrap().1;
 }
